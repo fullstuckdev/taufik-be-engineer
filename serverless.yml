@@ -1,0 +1,52 @@
+service: product-service
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+
+functions:
+  createProduct:
+    handler: src/createProduct.handler
+    events:
+      - http:
+          path: products
+          method: post
+          cors: true
+  getProduct:
+    handler: src/getProduct.handler
+    events:
+      - http:
+          path: products/{productId}
+          method: get
+          cors: true
+  updateProduct:
+    handler: src/updateProduct.handler
+    events:
+      - http:
+          path: products/{productId}
+          method: put
+          cors: true
+  deleteProduct:
+    handler: src/deleteProduct.handler
+    events:
+      - http:
+          path: products/{productId}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    productTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: "product"
+        AttributeDefinitions:
+          - AttributeName: "productId"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "productId"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
